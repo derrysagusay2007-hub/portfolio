@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bean & Brew Coffee</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8f4ef;
+            color: #3b2416;
+        }
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 18px 7%;
+
+            background: rgba(48, 29, 18, 0.96);
+            color: white;
+
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #d9a066;
+        }
+
+        nav ul {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #d9a066;
+        }
+
+        .cart-btn {
+            border: none;
+            background: #c27d45;
+            color: white;
+
+            padding: 10px 18px;
+            border-radius: 25px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-btn:hover {
+            background: #a96532;
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+
+            padding: 120px 7% 60px;
+
+            background:
+                linear-gradient(
+                    rgba(40, 22, 12, 0.65),
+                    rgba(40, 22, 12, 0.65)
+                ),
+                url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1800&q=80");
+
+            background-size: cover;
+            background-position: center;
+
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 650px;
+        }
+
+        .hero-content small {
+            color: #e0a66c;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(45px, 7vw, 80px);
+            line-height: 1.05;
+            margin: 15px 0 20px;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #eee;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn,
+        .secondary-btn {
+            padding: 14px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .primary-btn {
+            background: #c27d45;
+            color: white;
+        }
+
+        .secondary-btn {
+            border: 1px solid white;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #a96532;
+        }
+
+        .secondary-btn:hover {
+            background: white;
+            color: #3b2416;
+        }
+
+
+        /* =========================
+           GENERAL
+        ========================= */
+
+        section {
+            padding: 90px 7%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .section-title small {
+            color: #b36d37;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .section-title h2 {
+            font-size: 40px;
+            margin: 10px 0;
+        }
+
+        .section-title p {
+            color: #765f4f;
+        }
+
+
+        /* =========================
+           MENU FILTER
+        ========================= */
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+
+            margin-bottom: 35px;
+        }
+
+        .filter-btn {
+            border: 1px solid #c9ad95;
+            background: transparent;
+
+            padding: 9px 18px;
+            border-radius: 25px;
+
+            cursor: pointer;
+            color: #3b2416;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #3b2416;
+            color: white;
+        }
+
+
+        /* =========================
+           MENU CARDS
+        ========================= */
+
+        .menu-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(240px, 1fr));
+
+            gap: 25px;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 18px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 10px 30px rgba(50, 30, 15, 0.08);
+
+            transition: 0.3s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .menu-card.hidden {
+            display: none;
+        }
+
+        .menu-image {
+            position: relative;
+        }
+
+        .menu-image img {
+            width: 100%;
+            height: 210px;
+
+            object-fit: cover;
+            display: block;
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+
+            background: #c27d45;
+            color: white;
+
+            padding: 6px 12px;
+            border-radius: 20px;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .menu-info {
+            padding: 20px;
+        }
+
+        .menu-info h3 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .menu-info p {
+            color: #765f4f;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .menu-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .add-btn {
+            border: none;
+
+            background: #3b2416;
+            color: white;
+
+            padding: 9px 15px;
+            border-radius: 20px;
+
+            cursor: pointer;
+        }
+
+        .add-btn:hover {
+            background: #c27d45;
+        }
+
+
+        /* =========================
+           ABOUT
+        ========================= */
+
+        .about {
+            background: #eadfd4;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            gap: 55px;
+            align-items: center;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 450px;
+
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        .about-text small {
+            color: #b36d37;
+            font-weight: bold;
+        }
+
+        .about-text h2 {
+            font-size: 43px;
+            margin: 12px 0 20px;
+        }
+
+        .about-text p {
+            color: #654d3d;
+            line-height: 1.8;
+            margin-bottom: 18px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .feature {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+        }
+
+        .feature strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .feature span {
+            font-size: 13px;
+            color: #765f4f;
+        }
+
+
+        /* =========================
+           SPECIAL SECTION
+        ========================= */
+
+        .special {
+            background: #3b2416;
+            color: white;
+            text-align: center;
+        }
+
+        .special h2 {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .special p {
+            color: #ddd;
+            margin-bottom: 25px;
+        }
+
+        .special button {
+            border: none;
+            background: #c27d45;
+            color: white;
+
+            padding: 13px 25px;
+            border-radius: 25px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           CONTACT
+        ========================= */
+
+        .contact-container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+
+            box-shadow: 0 10px 30px rgba(0,0,0,.07);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+
+            border: 1px solid #d8c6b6;
+            border-radius: 8px;
+
+            padding: 14px;
+            margin-bottom: 15px;
+
+            outline: none;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: #c27d45;
+        }
+
+        .contact-form textarea {
+            height: 140px;
+            resize: none;
+        }
+
+        .send-btn {
+            width: 100%;
+
+            border: none;
+            background: #3b2416;
+            color: white;
+
+            padding: 14px;
+            border-radius: 8px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .send-btn:hover {
+            background: #c27d45;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            background: #26170f;
+            color: white;
+
+            padding: 45px 7%;
+
+            text-align: center;
+        }
+
+        footer h3 {
+            margin-bottom: 10px;
+        }
+
+        footer p {
+            color: #cfc1b8;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           CART
+        ========================= */
+
+        .cart-overlay {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0,0,0,.45);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: .3s;
+
+            z-index: 1999;
+        }
+
+        .cart-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart {
+            position: fixed;
+
+            top: 0;
+            right: -430px;
+
+            width: 400px;
+            max-width: 100%;
+
+            height: 100vh;
+
+            background: white;
+
+            z-index: 2000;
+
+            padding: 25px;
+
+            transition: .35s;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .close-cart {
+            border: none;
+            background: transparent;
+
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+
+            padding: 15px 0;
+
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item h4 {
+            margin-bottom: 5px;
+        }
+
+        .cart-item p {
+            color: #765f4f;
+            font-size: 14px;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            margin-top: 8px;
+        }
+
+        .quantity button {
+            border: 1px solid #ccc;
+            background: white;
+
+            width: 25px;
+            height: 25px;
+
+            border-radius: 50%;
+
+            cursor: pointer;
+        }
+
+        .remove-btn {
+            border: none !important;
+            background: transparent !important;
+
+            color: #b33a3a;
+
+            width: auto !important;
+            height: auto !important;
+
+            border-radius: 0 !important;
+        }
+
+        .cart-footer {
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .total {
+            display: flex;
+            justify-content: space-between;
+
+            font-size: 20px;
+            font-weight: bold;
+
+            margin-bottom: 15px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+
+            border: none;
+
+            background: #c27d45;
+            color: white;
+
+            padding: 14px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 50px 10px;
+            color: #765f4f;
+        }
+
+        .checkout-details {
+            border-top: 1px solid #ddd;
+            padding-top: 18px;
+        }
+
+        .checkout-details input {
+            width: 100%;
+            border: 1px solid #d8c6b6;
+            border-radius: 8px;
+            padding: 11px;
+            margin-bottom: 10px;
+        }
+
+        .qr-payment {
+            background: #f8f4ef;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .qr-payment h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .qr-payment p {
+            color: #765f4f;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .qr-placeholder {
+            display: grid;
+            place-items: center;
+            width: 110px;
+            aspect-ratio: 1;
+            margin: 12px auto;
+            border: 2px dashed #c27d45;
+            color: #b36d37;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .customization-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            place-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, .45);
+            z-index: 3000;
+        }
+
+        .customization-modal.show {
+            display: grid;
+        }
+
+        .customization-panel {
+            width: min(420px, 100%);
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 18px 45px rgba(50, 30, 15, .2);
+        }
+
+        .customization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .customization-close {
+            border: none;
+            background: transparent;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .customization-field {
+            margin-bottom: 15px;
+        }
+
+        .customization-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .customization-field select {
+            width: 100%;
+            border: 1px solid #d8c6b6;
+            border-radius: 8px;
+            padding: 11px;
+            background: white;
+        }
+
+        .customization-submit {
+            width: 100%;
+            border: none;
+            background: #3b2416;
+            color: white;
+            padding: 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .customization-submit:hover {
+            background: #c27d45;
+        }
+
+        .order-status {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            display: none;
+            width: min(380px, calc(100% - 40px));
+            padding: 22px;
+            background: white;
+            border-left: 5px solid #c27d45;
+            border-radius: 12px;
+            box-shadow: 0 12px 35px rgba(50, 30, 15, .2);
+            z-index: 2500;
+        }
+
+        .order-status.show {
+            display: block;
+        }
+
+        .order-status-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .order-status-close {
+            border: none;
+            background: transparent;
+            color: #765f4f;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .order-status p {
+            color: #765f4f;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 6px;
+        }
+
+        .order-status strong {
+            color: #3b2416;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            nav ul {
+                display: none;
+            }
+
+            .hero-content h1 {
+                font-size: 50px;
+            }
+
+            .about {
+                grid-template-columns: 1fr;
+            }
+
+            .about-image img {
+                height: 300px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            section {
+                padding: 70px 5%;
+            }
+
+            nav {
+                padding: 15px 5%;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .hero {
+                padding-left: 5%;
+                padding-right: 5%;
+            }
+
+            .hero-content h1 {
+                font-size: 42px;
+            }
+
+            .cart {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     NAVIGATION
+========================= -->
+
+<nav>
+
+    <div class="logo">
+        Bean <span>&</span> Brew
+    </div>
+
+    <ul>
+        <li>
+            <a href="#home">Home</a>
+        </li>
+
+        <li>
+            <a href="#menu">Menu</a>
+        </li>
+
+        <li>
+            <a href="#about">About</a>
+        </li>
+
+        <li>
+            <a href="#contact">Contact</a>
+        </li>
+    </ul>
+
+    <button class="cart-btn" onclick="openCart()">
+        🛒 Cart
+        (<span id="cartCount">0</span>)
+    </button>
+
+</nav>
+
+
+<!-- =========================
+     HERO
+========================= -->
+
+<section class="hero" id="home">
+
+    <div class="hero-content">
+
+        <small>WELCOME TO BEAN & BREW</small>
+
+        <h1>
+            Your Daily Cup of Happiness.
+        </h1>
+
+        <p>
+            Freshly roasted coffee, delicious pastries,
+            and a cozy place to relax, study, or spend
+            time with friends.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a href="#menu" class="primary-btn">
+                View Menu
+            </a>
+
+            <a href="#about" class="secondary-btn">
+                Our Story
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     MENU
+========================= -->
+
+<section id="menu">
+
+    <div class="section-title">
+
+        <small>Our Menu</small>
+
+        <h2>Choose Your Favorite</h2>
+
+        <p>
+            Crafted fresh and served with care.
+        </p>
+
+    </div>
+
+
+    <!-- FILTERS -->
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            onclick="filterMenu('all', this)">
+            All
+        </button>
+
+        <button
+            class="filter-btn"
+            onclick="filterMenu('coffee', this)">
+            Coffee
+        </button>
+
+        <button
+            class="filter-btn"
+            onclick="filterMenu('cold', this)">
+            Cold Drinks
+        </button>
+
+        <button
+            class="filter-btn"
+            onclick="filterMenu('food', this)">
+            Food
+        </button>
+
+        <button
+            class="filter-btn"
+            onclick="filterMenu('snacks', this)">
+            Snacks
+        </button>
+
+    </div>
+
+
+    <!-- MENU -->
+
+    <div class="menu-grid">
+
+
+        <!-- ESPRESSO -->
+
+        <div class="menu-card" data-category="coffee">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?auto=format&fit=crop&w=700&q=80">
+
+                <span class="badge">
+                    BEST SELLER
+                </span>
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Espresso</h3>
+
+                <p>
+                    Strong, rich and perfectly brewed.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱100
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="customizeItem('Espresso', 100)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CAPPUCCINO -->
+
+        <div class="menu-card" data-category="coffee">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Cappuccino</h3>
+
+                <p>
+                    Espresso, steamed milk and silky foam.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱130
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="customizeItem('Cappuccino', 130)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LATTE -->
+
+        <div class="menu-card" data-category="coffee">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Caramel Latte</h3>
+
+                <p>
+                    Smooth latte with sweet caramel.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱150
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="customizeItem('Caramel Latte', 150)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- AMERICANO -->
+
+        <div class="menu-card" data-category="coffee">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1551030173-122aabc4489c?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Americano</h3>
+
+                <p>
+                    Espresso balanced with hot water.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱110
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="customizeItem('Americano', 110)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ICED COFFEE -->
+
+        <div class="menu-card" data-category="cold">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=700&q=80">
+
+                <span class="badge">
+                    POPULAR
+                </span>
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Iced Coffee</h3>
+
+                <p>
+                    Cold, refreshing and smooth.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱120
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="customizeItem('Iced Coffee', 120)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MATCHA -->
+
+        <div class="menu-card" data-category="cold">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Matcha latte</h3>
+
+                <p>
+                    Creamy, refreshing and lightly sweet.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱145
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="customizeItem('Iced Matcha', 145)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CROISSANT -->
+
+        <div class="menu-card" data-category="food">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Butter Croissant</h3>
+
+                <p>
+                    Flaky, buttery and freshly baked.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱90
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="addItem('Butter Croissant', 90)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- CAKE -->
+
+        <div class="menu-card" data-category="food">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Chocolate Cake</h3>
+
+                <p>
+                    Rich chocolate cake with creamy frosting.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱150
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="addItem('Chocolate Cake', 150)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BURGER -->
+
+        <div class="menu-card" data-category="snacks">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=80">
+
+                <span class="badge">
+                    NEW
+                </span>
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Bean & Brew Burger</h3>
+
+                <p>
+                    Juicy beef patty, fresh lettuce and house sauce.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱190
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="addItem('Bean & Brew Burger', 190)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FRIES -->
+
+        <div class="menu-card" data-category="snacks">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Crispy French Fries</h3>
+
+                <p>
+                    Golden, crispy fries with a savory seasoning.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱95
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="addItem('Crispy French Fries', 95)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- COOKIE -->
+
+        <div class="menu-card" data-category="snacks">
+
+            <div class="menu-image">
+
+                <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=700&q=80">
+
+            </div>
+
+            <div class="menu-info">
+
+                <h3>Chocolate Chip Cookie</h3>
+
+                <p>
+                    Soft-baked cookie packed with chocolate chips.
+                </p>
+
+                <div class="menu-bottom">
+
+                    <span class="price">
+                        ₱75
+                    </span>
+
+                    <button
+                        class="add-btn"
+                        onclick="addItem('Chocolate Chip Cookie', 75)">
+                        + Add
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     ABOUT
+========================= -->
+
+<section class="about" id="about">
+
+    <div class="about-image">
+
+        <img
+            src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1000&q=80"
+            alt="Coffee shop interior">
+
+    </div>
+
+
+    <div class="about-text">
+
+        <small>OUR STORY</small>
+
+        <h2>
+            More Than Just Coffee.
+        </h2>
+
+        <p>
+            Bean & Brew started with one simple goal:
+            to create a place where everyone can enjoy
+            excellent coffee in a comfortable environment.
+        </p>
+
+        <p>
+            Whether you're studying, working, meeting
+            friends, or simply enjoying some quiet time,
+            there's always a seat waiting for you.
+        </p>
+
+
+        <div class="features">
+
+            <div class="feature">
+
+                <strong>☕ Fresh Coffee</strong>
+
+                <span>
+                    Carefully selected coffee beans.
+                </span>
+
+            </div>
+
+            <div class="feature">
+
+                <strong>🥐 Fresh Food</strong>
+
+                <span>
+                    Baked fresh every day.
+                </span>
+
+            </div>
+
+            <div class="feature">
+
+                <strong>📶 Free Wi-Fi</strong>
+
+                <span>
+                    Perfect for studying and working.
+                </span>
+
+            </div>
+
+            <div class="feature">
+
+                <strong>❤️ Cozy Place</strong>
+
+                <span>
+                    A comfortable space for everyone.
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     SPECIAL
+========================= -->
+
+<section class="special">
+
+    <h2>
+        Coffee Break?
+    </h2>
+
+    <p>
+        Treat yourself to something delicious today.
+    </p>
+
+    <button onclick="document.getElementById('menu').scrollIntoView()">
+        Order Something
+    </button>
+
+</section>
+
+
+<!-- =========================
+     CONTACT
+========================= -->
+
+<section id="contact">
+
+    <div class="section-title">
+
+        <small>Contact</small>
+
+        <h2>Let's Talk</h2>
+
+        <p>
+            Have a question? Send us a message.
+        </p>
+
+    </div>
+
+
+    <div class="contact-container">
+
+        <form
+            class="contact-form"
+            onsubmit="sendMessage(event)">
+
+            <div class="form-row">
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Your Name"
+                    required>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Your Email"
+                    required>
+
+            </div>
+
+            <textarea
+                id="message"
+                placeholder="Your Message"
+                required></textarea>
+
+            <button
+                class="send-btn"
+                type="submit">
+
+                Send Message
+
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <h3>
+        ☕ Bean & Brew
+    </h3>
+
+    <p>
+        Good coffee. Good food. Good moments.
+    </p>
+
+    <br>
+
+    <p>
+        © 2026 Bean & Brew Coffee. All Rights Reserved.
+    </p>
+
+</footer>
+
+
+<!-- =========================
+     CART OVERLAY
+========================= -->
+
+<div
+    class="cart-overlay"
+    id="cartOverlay"
+    onclick="closeCart()">
+</div>
+
+
+<!-- =========================
+     CART
+========================= -->
+
+<div class="cart" id="cart">
+
+    <div class="cart-header">
+
+        <h2>
+            Your Cart
+        </h2>
+
+        <button
+            class="close-cart"
+            onclick="closeCart()">
+
+            ×
+
+        </button>
+
+    </div>
+
+
+    <div
+        class="cart-items"
+        id="cartItems">
+
+    </div>
+
+
+    <div class="cart-footer">
+
+        <div class="checkout-details">
+
+            <input
+                type="text"
+                id="checkoutName"
+                placeholder="Your Name"
+                autocomplete="name">
+
+            <input
+                type="email"
+                id="checkoutEmail"
+                placeholder="Your Email"
+                autocomplete="email">
+
+        </div>
+
+        <div class="qr-payment">
+
+            <h3>Pay with QR</h3>
+
+            <div class="qr-placeholder" aria-label="Place your merchant QR code here">
+                YOUR QR<br>CODE
+            </div>
+
+            <p>Replace this box with your official GCash or Maya merchant QR.</p>
+
+        </div>
+
+        <div class="total">
+
+            <span>
+                Total
+            </span>
+
+            <span>
+                ₱<span id="cartTotal">0</span>
+            </span>
+
+        </div>
+
+        <button
+            class="checkout-btn"
+            onclick="checkout()">
+
+            Place Order
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="order-status" id="orderStatus" role="status" aria-live="polite">
+
+    <div class="order-status-header">
+
+        <div>
+            <h3>Order received</h3>
+            <p>Order <strong id="orderNumber"></strong></p>
+        </div>
+
+        <button
+            class="order-status-close"
+            aria-label="Close order status"
+            onclick="closeOrderStatus()">
+            ×
+        </button>
+
+    </div>
+
+    <p>
+        Status: <strong id="orderState">Pending</strong><br>
+        Estimated preparation time: <strong>15-20 minutes</strong>
+    </p>
+
+</div>
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
+<div
+    class="customization-modal"
+    id="customizationModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="customizationTitle">
+
+    <div class="customization-panel">
+
+        <div class="customization-header">
+
+            <h2 id="customizationTitle">Customize your drink</h2>
+
+            <button
+                class="customization-close"
+                aria-label="Close customization"
+                onclick="closeCustomization()">
+                ×
+            </button>
+
+        </div>
+
+        <div class="customization-field">
+            <label for="drinkSize">Size</label>
+            <select id="drinkSize">
+                <option value="Regular|0">Regular</option>
+                <option value="Large|30">Large (+₱30)</option>
+            </select>
+        </div>
+
+        <div class="customization-field">
+            <label for="drinkMilk">Milk</label>
+            <select id="drinkMilk">
+                <option>Whole Milk</option>
+                <option>Oat Milk (+₱25)</option>
+                <option>Almond Milk (+₱25)</option>
+            </select>
+        </div>
+
+        <div class="customization-field">
+            <label for="drinkSyrup">Syrup</label>
+            <select id="drinkSyrup">
+                <option>None</option>
+                <option>Vanilla (+₱15)</option>
+                <option>Caramel (+₱15)</option>
+            </select>
+        </div>
+
+        <button
+            class="customization-submit"
+            onclick="confirmCustomization()">
+            Add Customized Drink
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+    let cart = [];
+    let customization = null;
+
+
+    /* =========================
+       ADD ITEM
+    ========================= */
+
+    function addItem(name, price) {
+
+        let existing =
+            cart.find(item => item.name === name);
+
+        if (existing) {
+
+            existing.quantity++;
+
+        } else {
+
+            cart.push({
+                name: name,
+                price: price,
+                quantity: 1
+            });
+
+        }
+
+        updateCart();
+
+        openCart();
+    }
+
+
+    function customizeItem(name, price) {
+
+        customization = { name, price };
+        document.getElementById("customizationTitle").textContent =
+            "Customize " + name;
+        document.getElementById("drinkSize").value = "Regular|0";
+        document.getElementById("drinkMilk").value = "Whole Milk";
+        document.getElementById("drinkSyrup").value = "None";
+        document.getElementById("customizationModal").classList.add("show");
+    }
+
+
+    function closeCustomization() {
+
+        customization = null;
+        document.getElementById("customizationModal").classList.remove("show");
+    }
+
+
+    function confirmCustomization() {
+
+        if (!customization) {
+            return;
+        }
+
+        const [size, sizePrice] =
+            document.getElementById("drinkSize").value.split("|");
+        const milk = document.getElementById("drinkMilk").value;
+        const syrup = document.getElementById("drinkSyrup").value;
+        const milkPrice = milk.includes("+") ? 25 : 0;
+        const syrupPrice = syrup.includes("+") ? 15 : 0;
+        const cleanMilk = milk.replace(/ \(\+₱\d+\)/, "");
+        const cleanSyrup = syrup.replace(/ \(\+₱\d+\)/, "");
+        const itemName = `${customization.name} (${size}, ${cleanMilk}, ${cleanSyrup})`;
+
+        addItem(
+            itemName,
+            customization.price + Number(sizePrice) + milkPrice + syrupPrice
+        );
+        closeCustomization();
+    }
+
+
+    /* =========================
+       UPDATE CART
+    ========================= */
+
+    function updateCart() {
+
+        const container =
+            document.getElementById("cartItems");
+
+        const count =
+            document.getElementById("cartCount");
+
+        const totalElement =
+            document.getElementById("cartTotal");
+
+
+        container.innerHTML = "";
+
+        let total = 0;
+        let itemCount = 0;
+
+
+        if (cart.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-cart">
+                    <h3>Your cart is empty ☕</h3>
+                    <p>Add something delicious!</p>
+                </div>
+            `;
+
+        }
+
+
+        cart.forEach((item, index) => {
+
+            total += item.price * item.quantity;
+
+            itemCount += item.quantity;
+
+
+            const div =
+                document.createElement("div");
+
+            div.className = "cart-item";
+
+
+            div.innerHTML = `
+
+                <div>
+
+                    <h4>
+                        ${item.name}
+                    </h4>
+
+                    <p>
+                        ₱${item.price}
+                    </p>
+
+                    <div class="quantity">
+
+                        <button
+                            onclick="decreaseItem(${index})">
+                            −
+                        </button>
+
+                        <span>
+                            ${item.quantity}
+                        </span>
+
+                        <button
+                            onclick="increaseItem(${index})">
+                            +
+                        </button>
+
+                        <button
+                            class="remove-btn"
+                            onclick="removeItem(${index})">
+                            Remove
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <strong>
+                    ₱${item.price * item.quantity}
+                </strong>
+
+            `;
+
+
+            container.appendChild(div);
+
+        });
+
+
+        count.textContent = itemCount;
+
+        totalElement.textContent =
+            total.toFixed(2);
+    }
+
+
+    /* =========================
+       INCREASE
+    ========================= */
+
+    function increaseItem(index) {
+
+        cart[index].quantity++;
+
+        updateCart();
+    }
+
+
+    /* =========================
+       DECREASE
+    ========================= */
+
+    function decreaseItem(index) {
+
+        if (cart[index].quantity > 1) {
+
+            cart[index].quantity--;
+
+        } else {
+
+            cart.splice(index, 1);
+
+        }
+
+        updateCart();
+    }
+
+
+    /* =========================
+       REMOVE
+    ========================= */
+
+    function removeItem(index) {
+
+        cart.splice(index, 1);
+
+        updateCart();
+    }
+
+
+    /* =========================
+       OPEN CART
+    ========================= */
+
+    function openCart() {
+
+        document
+            .getElementById("cart")
+            .classList.add("open");
+
+        document
+            .getElementById("cartOverlay")
+            .classList.add("show");
+    }
+
+
+    /* =========================
+       CLOSE CART
+    ========================= */
+
+    function closeCart() {
+
+        document
+            .getElementById("cart")
+            .classList.remove("open");
+
+        document
+            .getElementById("cartOverlay")
+            .classList.remove("show");
+    }
+
+
+    /* =========================
+       CHECKOUT
+    ========================= */
+
+    function checkout() {
+
+        if (cart.length === 0) {
+
+            alert(
+                "Your cart is empty!"
+            );
+
+            return;
+        }
+
+        const name = document.getElementById("checkoutName").value.trim();
+        const email = document.getElementById("checkoutEmail").value.trim();
+
+        if (!name || !email) {
+            alert("Please enter your name and email before checking out.");
+            return;
+        }
+
+        fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                customer: { name, email },
+                items: cart
+            })
+        })
+            .then(response => response.json().then(data => ({ ok: response.ok, data })))
+            .then(({ ok, data }) => {
+                if (!ok) {
+                    throw new Error(data.error || "Unable to create the order.");
+                }
+
+                if (data.checkoutUrl) {
+                    window.location.href = data.checkoutUrl;
+                    return;
+                }
+
+                showOrderStatus(data.orderId, data.status);
+                cart = [];
+                updateCart();
+                closeCart();
+            })
+            .catch(error => {
+                alert(error.message + " Make sure the backend is running.");
+            });
+    }
+
+
+    function showOrderStatus(orderId, status) {
+
+        document.getElementById("orderNumber").textContent = orderId;
+        document.getElementById("orderState").textContent =
+            status === "paid" ? "Paid and received" : "Received";
+        document.getElementById("orderStatus").classList.add("show");
+    }
+
+
+    function closeOrderStatus() {
+
+        document.getElementById("orderStatus").classList.remove("show");
+    }
+
+
+    /* =========================
+       MENU FILTER
+    ========================= */
+
+    function filterMenu(category, button) {
+
+        const cards =
+            document.querySelectorAll(".menu-card");
+
+        const buttons =
+            document.querySelectorAll(".filter-btn");
+
+
+        buttons.forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+        button.classList.add("active");
+
+
+        cards.forEach(card => {
+
+            if (
+                category === "all" ||
+                card.dataset.category === category
+            ) {
+
+                card.classList.remove("hidden");
+
+            } else {
+
+                card.classList.add("hidden");
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================
+       CONTACT FORM
+    ========================= */
+
+    function sendMessage(event) {
+
+        event.preventDefault();
+
+
+        const name =
+            document.getElementById("name").value;
+
+
+        alert(
+            "Thank you, " +
+            name +
+            "! ☕\n\n" +
+            "Your message has been received."
+        );
+
+
+        event.target.reset();
+    }
+
+
+    /* =========================
+       INITIALIZE
+    ========================= */
+
+    updateCart();
+
+</script>
+
+</body>
+</html>

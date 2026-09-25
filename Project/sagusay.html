@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Recognition Attendance System</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        #status {
+            color: #00ffcc;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .main-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            max-width: 1400px;
+        }
+
+        #video-container {
+            position: relative;
+            width: 640px;
+            height: 480px;
+            border: 2px solid #00ffcc;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        video {
+            width: 640px;
+            height: 480px;
+            transform: scaleX(-1);
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 350px;
+        }
+
+        .attendance-panel {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .attendance-panel h2 {
+            margin-top: 0;
+            color: #00ffcc;
+        }
+
+        .stats-box {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+
+        .stats-box span {
+            color: #00ffcc;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .admin-section {
+            background: #252525;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px dashed #00ffcc;
+        }
+
+        .admin-section h4 {
+            margin: 0 0 8px 0;
+            color: #ffcc00;
+            font-size: 14px;
+        }
+
+        .admin-section select,
+        .admin-section input,
+        .admin-section button {
+            width: 100%;
+            padding: 6px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: none;
+            font-weight: bold;
+            box-sizing: border-box;
+        }
+
+        .admin-section select,
+        .admin-section input {
+            background: #333;
+            color: #fff;
+        }
+
+        .admin-section button {
+            background-color: #ffcc00;
+            color: #121212;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .admin-section button:hover {
+            background-color: #ffdd33;
+        }
+
+        .filter-section {
+            background: #252525;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+        }
+
+        .filter-section h4 {
+            margin: 0 0 8px 0;
+            color: #00ffcc;
+            font-size: 14px;
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-controls input,
+        .filter-controls select {
+            padding: 6px;
+            border-radius: 4px;
+            border: none;
+            background: #333;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            background: #2a2a2a;
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid #444;
+            font-size: 12px;
+        }
+
+        .stat-item .value {
+            color: #00ffcc;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .stat-item .label {
+            color: #888;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 6px;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            color: #888;
+        }
+
+        #notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s ease;
+        }
+
+        #liveness-status {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffcc00;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            border: 1px solid #ffcc00;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .button-group button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: opacity 0.3s;
+        }
+
+        .button-group button:hover {
+            opacity: 0.9;
+        }
+
+        .btn-export {
+            background-color: #00ffcc;
+            color: #121212;
+        }
+
+        .btn-clear {
+            background-color: #ff4444;
+            color: #ffffff;
+        }
+
+        .btn-settings {
+            background-color: #6666ff;
+            color: #ffffff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #1e1e1e;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid #00ffcc;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #00ffcc;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border-radius: 4px;
+            border: none;
+            background: #333;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background-color: #00ffcc;
+            color: #121212;
+        }
+
+        .btn-cancel {
+            background-color: #666;
+            color: #fff;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: #00ffcc;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Face Recognition Attendance System</h1>
+    <div id="status">Initializing system...</div>
+    <div id="notification"></div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2>⚙️ Settings</h2>
+            <label>Add New Person:</label>
+            <input type="text" id="newPersonName" placeholder="Enter person's name">
+            <label>Confidence Threshold (0.4 - 1.0):</label>
+            <input type="number" id="confidenceThreshold" min="0.4" max="1.0" step="0.05" value="0.65">
+            <label>Remove Person:</label>
+            <select id="removePersonSelect"></select>
+            <button class="btn-cancel" type="button" onclick="removePerson()">Remove Selected Person</button>
+            <div class="modal-buttons">
+                <button class="btn-save" onclick="saveSettings()">Save</button>
+                <button class="btn-cancel" onclick="closeSettings()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div id="video-container">
+            <div id="liveness-status">👁️ Please Blink to Confirm</div>
+            <video id="webcam" autoplay muted playsinline></video>
+        </div>
+
+        <div class="right-panel">
+            <div class="attendance-panel">
+                <h2>📊 Attendance Log</h2>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="label">Present Today</div>
+                        <div class="value" id="total-count">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="label">Avg. Match</div>
+                        <div class="value" id="avg-confidence">-</div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h4>🔍 Search & Filter</h4>
+                    <div class="filter-controls">
+                        <input type="text" id="searchInput" placeholder="Search name...">
+                        <select id="dateFilter">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="all">All Records</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h4>🛡️ Admin Override</h4>
+                    <select id="manualNameSelect">
+                        <option value="">Select Person...</option>
+                        <option value="Derry">Derry</option>
+                    </select>
+                    <button id="manualOverrideBtn">Force Check-In</button>
+                </div>
+
+                <div class="button-group">
+                    <button id="exportBtn" class="btn-export">📥 Export CSV</button>
+                    <button id="settingsBtn" class="btn-settings">⚙️ Settings</button>
+                    <button id="clearBtn" class="btn-clear">🗑️ Clear</button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendance-list"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* global faceapi */
+        // @ts-nocheck
+
+        const video = document.getElementById('webcam');
+        const statusText = document.getElementById('status');
+        const tableBody = document.getElementById('attendance-list');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const totalCountDisplay = document.getElementById('total-count');
+        const avgConfidenceDisplay = document.getElementById('avg-confidence');
+        const manualOverrideBtn = document.getElementById('manualOverrideBtn');
+        const manualNameSelect = document.getElementById('manualNameSelect');
+        const searchInput = document.getElementById('searchInput');
+        const dateFilter = document.getElementById('dateFilter');
+        const settingsModal = document.getElementById('settingsModal');
+        const newPersonNameInput = document.getElementById('newPersonName');
+        const confidenceThresholdInput = document.getElementById('confidenceThreshold');
+        const removePersonSelect = document.getElementById('removePersonSelect');
+
+        const notification = document.getElementById('notification');
+        const livenessStatus = document.getElementById('liveness-status');
+        const hasBlinkVerified = new Map();
+
+        let LABELED_PEOPLE = ['Derry', 'Justine', 'Mc Henson'];
+        const REFERENCE_IMAGES = {
+            Derry: ['1.png'],
+            Justine: ['3.png'],
+            'Mc Henson': ['2.png']
+        };
+        let faceMatcher = null;
+        let confidenceThreshold = 0.55;
+
+        const attendanceStorageKey = 'face_attendance_records_v1';
+        const settingsStorageKey = 'face_system_settings';
+        const lastScannedTime = new Map();
+        const COOLDOWN_MS = 10 * 60 * 1000;
+
+        let presentCount = 0;
+        let eyeOpenMax = 0;
+        let eyesWereOpen = false;
+        let closedEyeFrames = 0;
+        let lastBlinkTime = 0;
+        let confidenceScores = [];
+        let attendanceInProgress = false;
+        const attendanceLoggedThisSession = new Set();
+        const duplicateNoticeShown = new Set();
+
+        // Load settings
+        function loadSettings() {
+            try {
+                const settings = JSON.parse(localStorage.getItem(settingsStorageKey) || '{}');
+                confidenceThreshold = Math.min(settings.confidenceThreshold || 0.55, 0.55);
+                const defaultPeople = ['Derry', 'Justine', 'Mc Henson'];
+                LABELED_PEOPLE = [...new Set([...(settings.labeledPeople || []), ...defaultPeople])];
+                confidenceThresholdInput.value = confidenceThreshold;
+                updatePersonDropdown();
+            } catch (e) {
+                console.error('Settings load error:', e);
+            }
+        }
+
+        function saveSettings() {
+               const newPerson = newPersonNameInput.value.trim();
+            const newThreshold = parseFloat(confidenceThresholdInput.value);
+
+            if (newThreshold < 0.4 || newThreshold > 1.0) {
+                alert('Confidence threshold must be between 0.4 and 1.0');
+                return;
+            }
+
+            if (newPerson && !LABELED_PEOPLE.includes(newPerson)) {
+                LABELED_PEOPLE.push(newPerson);
+                alert(`✓ Added ${newPerson}. Make sure to upload their reference photo as: ./labeled_images/${newPerson}/1.jpg`);
+            }
+
+            confidenceThreshold = newThreshold;
+
+            const settings = {
+                confidenceThreshold,
+                labeledPeople: LABELED_PEOPLE
+            };
+
+            localStorage.setItem(settingsStorageKey, JSON.stringify(settings));
+            updatePersonDropdown();
+            newPersonNameInput.value = '';
+            closeSettings();
+            showNotification('Settings saved!', true);
+        }
+
+        function closeSettings() {
+            settingsModal.classList.remove('active');
+        }
+
+        function updatePersonDropdown() {
+            const currentValue = manualNameSelect.value;
+            manualNameSelect.innerHTML = '<option value="">Select Person...</option>';
+            LABELED_PEOPLE.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person;
+                option.innerText = person;
+                manualNameSelect.appendChild(option);
+            });
+            manualNameSelect.value = currentValue || '';
+
+            removePersonSelect.innerHTML = '<option value="">Select Person...</option>';
+            LABELED_PEOPLE.forEach(person => {
+                const option = document.createElement('option');
+                option.value = person;
+                option.innerText = person;
+                removePersonSelect.appendChild(option);
+            });
+        }
+
+        async function removePerson() {
+            const personToRemove = removePersonSelect.value;
+            if (!personToRemove) {
+                alert('Select a person to remove.');
+                return;
+            }
+
+            if (!confirm(`Remove ${personToRemove} from face recognition?`)) {
+                return;
+            }
+
+            LABELED_PEOPLE = LABELED_PEOPLE.filter(person => person !== personToRemove);
+            localStorage.setItem(settingsStorageKey, JSON.stringify({
+                confidenceThreshold,
+                labeledPeople: LABELED_PEOPLE
+            }));
+            updatePersonDropdown();
+            removePersonSelect.value = '';
+
+            const labeledDescriptors = await loadLabeledImages();
+            faceMatcher = labeledDescriptors.length > 0
+                ? new faceapi.FaceMatcher(labeledDescriptors, confidenceThreshold)
+                : null;
+            showNotification(`${personToRemove} was removed.`, true);
+        }
+
+        function getStoredRecords() {
+            try {
+                return JSON.parse(localStorage.getItem(attendanceStorageKey) || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveStoredRecords(records) {
+            localStorage.setItem(attendanceStorageKey, JSON.stringify(records));
+        }
+
+        function isSameDay(dateValue) {
+            const d = new Date(dateValue);
+            const now = new Date();
+            return d.getFullYear() === now.getFullYear() &&
+                d.getMonth() === now.getMonth() &&
+                d.getDate() === now.getDate();
+        }
+
+        function isWithinDateRange(dateValue, rangeType) {
+            const d = new Date(dateValue);
+            const now = new Date();
+
+            if (rangeType === 'today') return isSameDay(dateValue);
+
+            if (rangeType === 'week') {
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                return d >= weekAgo && d <= now;
+            }
+
+            if (rangeType === 'month') {
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                return d >= monthAgo && d <= now;
+            }
+
+            return true;
+        }
+
+        function hasAlreadyMarkedToday(name) {
+            const records = getStoredRecords();
+            return records.some(record =>
+                record.name === name && isSameDay(record.timestamp)
+            );
+        }
+
+        function playBeepSound(frequency = 800, duration = 0.15) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = frequency;
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.error('Audio playback error:', e);
+            }
+        }
+
+        function speakMessage(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function showNotification(message, isSuccess = true) {
+            notification.innerText = message;
+            notification.style.backgroundColor = isSuccess ? '#00ffcc' : '#ff9900';
+            notification.style.color = '#121212';
+            notification.style.display = 'block';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function getEuclideanDistance(pt1, pt2) {
+            return Math.sqrt(Math.pow(pt1.x - pt2.x, 2) + Math.pow(pt1.y - pt2.y, 2));
+        }
+
+        function getEyeAspectRatio(eyeLandmarks) {
+            const p2_p6 = getEuclideanDistance(eyeLandmarks[1], eyeLandmarks[5]);
+            const p3_p5 = getEuclideanDistance(eyeLandmarks[2], eyeLandmarks[4]);
+            const p1_p4 = getEuclideanDistance(eyeLandmarks[0], eyeLandmarks[3]);
+            return (p2_p6 + p3_p5) / (2.0 * p1_p4);
+        }
+
+        function isBlinking(landmarks, faceBox) {
+            const leftEye = landmarks.getLeftEye();
+            const rightEye = landmarks.getRightEye();
+
+            const leftEAR = getEyeAspectRatio(leftEye);
+            const rightEAR = getEyeAspectRatio(rightEye);
+            const avgEAR = (leftEAR + rightEAR) / 2.0;
+
+            const leftVertical = getEuclideanDistance(leftEye[1], leftEye[5]);
+            const rightVertical = getEuclideanDistance(rightEye[1], rightEye[5]);
+            const rawAvgVertical = (leftVertical + rightVertical) / 2.0;
+
+            const faceWidth = faceBox ? faceBox.width : 200;
+            const normalizedEyeHeight = rawAvgVertical / faceWidth;
+
+            if (avgEAR > 0.24) {
+                eyesWereOpen = true;
+                closedEyeFrames = 0;
+            }
+
+            if (avgEAR > eyeOpenMax) {
+                eyeOpenMax = avgEAR;
+            }
+
+            const relativeDrop = eyeOpenMax > 0 ? (eyeOpenMax - avgEAR) / eyeOpenMax : 0;
+            const eyesClosed = avgEAR < 0.24 || relativeDrop > 0.25 || normalizedEyeHeight < 0.021;
+
+            if (eyesWereOpen && eyesClosed) {
+                closedEyeFrames++;
+            } else if (!eyesClosed) {
+                closedEyeFrames = 0;
+            }
+
+            if (eyesWereOpen && closedEyeFrames >= 1 && Date.now() - lastBlinkTime > 800) {
+                eyesWereOpen = false;
+                closedEyeFrames = 0;
+                lastBlinkTime = Date.now();
+                return true;
+            }
+
+            return false;
+        }
+
+        function renderTableRow(name, timeString, isNew = true, confidence = null, deleteFunc = null, timestamp = null) {
+            const row = document.createElement('tr');
+            row.dataset.timestamp = timestamp || new Date().toISOString();
+            const confText = confidence ? ` (${(confidence * 100).toFixed(0)}%)` : '';
+            const deleteBtn = deleteFunc ? `<button onclick="deleteAttendanceRecord('${name}', '${timeString}')" style="background: #ff6666; color: white; border: none; padding: 3px 8px; border-radius: 3px; cursor: pointer; font-size: 11px;">Delete</button>` : '';
+            
+            row.innerHTML = `
+                <td style="color: #00ffcc; font-weight: bold;">${name}${confText}</td>
+                <td>${timeString}</td>
+                <td>${deleteBtn}</td>
+            `;
+            tableBody.prepend(row);
+
+            if (isNew) {
+                presentCount++;
+                totalCountDisplay.innerText = presentCount;
+            }
+        }
+
+        function deleteAttendanceRecord(name, timeString) {
+            const records = getStoredRecords();
+            const filtered = records.filter(r => !(r.name === name && r.timestamp.includes(timeString.split(':')[0])));
+            saveStoredRecords(filtered);
+            loadSavedAttendance();
+        }
+
+        function updateConfidenceDisplay() {
+            if (confidenceScores.length > 0) {
+                const avg = (confidenceScores.reduce((a, b) => a + b) / confidenceScores.length * 100).toFixed(0);
+                avgConfidenceDisplay.innerText = avg + '%';
+            }
+        }
+
+        function filterAttendanceRecords() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const dateRange = dateFilter.value;
+            const rows = tableBody.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const name = row.cells[0].innerText.toLowerCase();
+                const timestamp = row.dataset.timestamp;
+
+                let matchesSearch = name.includes(searchTerm);
+                let matchesDate = true;
+
+                try {
+                    const recordDate = new Date(timestamp);
+                    matchesDate = isWithinDateRange(recordDate, dateRange);
+                } catch (e) {
+                    matchesDate = true;
+                }
+
+                row.style.display = (matchesSearch && matchesDate) ? '' : 'none';
+            });
+        }
+
+        async function loadSavedAttendance() {
+            try {
+                let localRecords = getStoredRecords();
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/attendance');
+                    if (response.ok) {
+                        const backendLogs = await response.json();
+                        if (backendLogs && backendLogs.length > 0) {
+                            localRecords = backendLogs;
+                            saveStoredRecords(backendLogs);
+                        }
+                    }
+                } catch (err) {
+                    console.warn('Backend unavailable, using local storage.');
+                }
+
+                tableBody.innerHTML = '';
+                presentCount = 0;
+                confidenceScores = [];
+
+                localRecords
+                    .filter(log => log && log.name && log.timestamp)
+                    .filter(log => isSameDay(log.timestamp))
+                    .forEach(log => {
+                        const timeFormatted = new Date(log.timestamp).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+
+                        if (log.confidence) {
+                            confidenceScores.push(log.confidence);
+                        }
+
+                        renderTableRow(log.name, timeFormatted, false, log.confidence, null, log.timestamp);
+                    });
+
+                presentCount = new Set(localRecords
+                    .filter(log => log && log.name && log.timestamp)
+                    .filter(log => isSameDay(log.timestamp))
+                    .map(log => log.name)).size;
+                totalCountDisplay.innerText = presentCount;
+                updateConfidenceDisplay();
+                filterAttendanceRecords();
+            } catch (err) {
+                console.error('Failed to load attendance:', err);
+            }
+        }
+
+        async function markAttendance(name, force = false, confidence = null) {
+            if (!name || name === 'unknown' || name === 'Unknown') {
+                return false;
+            }
+
+            const nowTime = Date.now();
+            const lastTime = lastScannedTime.get(name) || 0;
+
+            if (!force && nowTime - lastTime < COOLDOWN_MS) {
+                return false;
+            }
+
+            if (!force && hasAlreadyMarkedToday(name)) {
+                return false;
+            }
+
+            lastScannedTime.set(name, nowTime);
+
+            const timestamp = new Date().toISOString();
+            const timeString = new Date(timestamp).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+
+            const records = getStoredRecords();
+            records.push({ name, timestamp, confidence: confidence || null });
+            saveStoredRecords(records);
+
+            renderTableRow(name, timeString, true, confidence, null, timestamp);
+            hasBlinkVerified.set(name, false);
+
+            if (confidence) {
+                confidenceScores.push(confidence);
+                updateConfidenceDisplay();
+            }
+
+            playBeepSound(900, 0.2);
+            speakMessage(`Attendance log for ${name} is successful`);
+            statusText.innerText = `Attendance logged successfully for ${name}`;
+            showNotification(`✓ Attendance logged successfully for ${name}.`, true);
+
+            try {
+                await fetch('http://localhost:3000/api/attendance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, timestamp, confidence: confidence || null })
+                });
+            } catch (err) {
+                console.warn('Backend unavailable; saved locally.');
+            }
+
+            return true;
+        }
+
+        async function init() {
+            loadSettings();
+            await loadSavedAttendance();
+
+            try {
+                statusText.innerText = 'Downloading AI Models...';
+                const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights';
+
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+                ]);
+
+                statusText.innerText = 'Loading reference photos...';
+                const labeledDescriptors = await loadLabeledImages();
+
+                if (labeledDescriptors && labeledDescriptors.length > 0) {
+                    faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, confidenceThreshold);
+                    statusText.innerText = 'Scanner Ready!';
+                } else {
+                    statusText.innerText = 'No photos found. Running in generic mode.';
+                }
+
+                startVideo();
+            } catch (err) {
+                statusText.innerText = 'Error loading AI models. Check internet connection.';
+                console.error('Init Error:', err);
+                startVideo();
+            }
+        }
+
+        function loadLabeledImages() {
+            return Promise.all(
+                LABELED_PEOPLE.map(async label => {
+                    const imageNames = REFERENCE_IMAGES[label] || ['1.jpg'];
+                    const descriptors = await Promise.all(imageNames.map(async imageName => {
+                        const imgUrl = `./labeled_images/${label}/${imageName}`;
+                        try {
+                            statusText.innerText = `Loading photo for ${label}...`;
+
+                            const img = await faceapi.fetchImage(imgUrl);
+                            const detections = await faceapi.detectSingleFace(
+                                img,
+                                new faceapi.TinyFaceDetectorOptions({
+                                    inputSize: 320,
+                                    scoreThreshold: 0.3
+                                })
+                            ).withFaceLandmarks().withFaceDescriptor();
+
+                            if (!detections) {
+                                console.warn(`No face detected in photo at ${imgUrl}`);
+                                return null;
+                            }
+
+                            return detections.descriptor;
+                        } catch (e) {
+                            console.error(`Could not load image at ${imgUrl}`, e);
+                            return null;
+                        }
+                    }));
+
+                    const validDescriptors = descriptors.filter(Boolean);
+                    return validDescriptors.length > 0
+                        ? new faceapi.LabeledFaceDescriptors(label, validDescriptors)
+                        : null;
+                })
+            ).then(results => results.filter(Boolean));
+        }
+
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    statusText.innerText = 'Camera access denied.';
+                    console.error('Camera error:', err);
+                });
+        }
+
+        exportBtn.addEventListener('click', () => {
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+            if (rows.length === 0) {
+                alert('No attendance records to export!');
+                return;
+            }
+
+            let csvContent = 'Name,Time,Confidence\n';
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                if (cols[1].style.display !== 'none') {
+                    csvContent += `"${cols[0].innerText}","${cols[1].innerText}",""\n`;
+                }
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+
+            const today = new Date().toISOString().split('T')[0];
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Attendance_Log_${today}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+
+        <!-- Find the clearBtn.addEventListener section (around line 580) and REPLACE it with this: -->
+
+clearBtn.addEventListener('click', () => {
+    const password = prompt('🔐 Enter admin password to clear records:');
+    if (password) {
+        if (confirm('⚠️ Are you sure you want to clear ALL attendance records? This cannot be undone!')) {
+            lastScannedTime.clear();
+            hasBlinkVerified.clear();
+            eyeOpenMax = 0;
+            eyesWereOpen = false;
+            closedEyeFrames = 0;
+            lastBlinkTime = 0;
+            presentCount = 0;
+            confidenceScores = [];
+            totalCountDisplay.innerText = 0;
+            avgConfidenceDisplay.innerText = '-';
+            tableBody.innerHTML = '';
+            localStorage.removeItem(attendanceStorageKey);
+
+            fetch('http://localhost:3000/api/attendance', {
+                method: 'DELETE',
+                headers: {
+                    'password': password  // ← SEND PASSWORD HERE
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message) {
+                    showNotification(data.message, true);
+                } else {
+                    showNotification('Records cleared successfully!', true);
+                }
+            })
+            .catch(err => {
+                showNotification('❌ Invalid password or server error', false);
+                console.error('Clear error:', err);
+            });
+        }
+    }
+});
+
+        manualOverrideBtn.addEventListener('click', () => {
+            const selectedPerson = manualNameSelect.value;
+            if (selectedPerson) {
+                markAttendance(selectedPerson, true);
+            }
+        });
+
+        searchInput.addEventListener('input', filterAttendanceRecords);
+        dateFilter.addEventListener('change', filterAttendanceRecords);
+
+        video.addEventListener('play', () => {
+            const container = document.getElementById('video-container');
+            const canvas = faceapi.createCanvasFromMedia(video);
+            container.append(canvas);
+
+            const displaySize = { width: 640, height: 480 };
+            faceapi.matchDimensions(canvas, displaySize);
+
+            setInterval(async () => {
+                if (video.paused || video.ended) return;
+
+                const detections = await faceapi.detectAllFaces(
+                    video,
+                    new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.25 })
+                ).withFaceLandmarks().withFaceDescriptors();
+
+                const resizedDetections = faceapi.resizeResults(detections, displaySize);
+
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (resizedDetections.length === 0) {
+                    livenessStatus.style.display = 'none';
+                    duplicateNoticeShown.clear();
+                    return;
+                } else {
+                    livenessStatus.style.display = 'block';
+                }
+
+                resizedDetections.forEach((detection) => {
+                    const box = detection.detection.box;
+                    const landmarks = detection.landmarks;
+
+                    const mirroredBox = {
+                        x: displaySize.width - box.x - box.width,
+                        y: box.y,
+                        width: box.width,
+                        height: box.height
+                    };
+
+                    let labelText = 'Scanning...';
+                    let boxColor = '#00ffcc';
+                    let confidence = 0;
+
+                    if (faceMatcher) {
+                        const match = faceMatcher.findBestMatch(detection.descriptor);
+                        const matchedName = match.label;
+                        confidence = 1 - match.distance;
+
+                        if (matchedName !== 'unknown' && confidence >= confidenceThreshold) {
+                            const userBlinked = isBlinking(landmarks, box);
+
+                            if (userBlinked) {
+                                hasBlinkVerified.set(matchedName, true);
+                            }
+
+                            if (hasBlinkVerified.get(matchedName)) {
+                                boxColor = '#00ff88';
+                                labelText = `${matchedName} (${(confidence * 100).toFixed(0)}% Verified Live)`;
+                                livenessStatus.innerText = '✓ Blink Verified!';
+                                livenessStatus.style.borderColor = '#00ff88';
+                                livenessStatus.style.color = '#00ff88';
+
+                                if (!attendanceInProgress && !attendanceLoggedThisSession.has(matchedName)) {
+                                    attendanceInProgress = true;
+                                    markAttendance(matchedName, false, confidence)
+                                        .then(marked => {
+                                            if (marked) {
+                                                attendanceLoggedThisSession.add(matchedName);
+                                            } else if (hasAlreadyMarkedToday(matchedName)) {
+                                                if (!attendanceLoggedThisSession.has(matchedName)) {
+                                                    attendanceLoggedThisSession.add(matchedName);
+                                                    speakMessage(`Attendance log for ${matchedName} is successful`);
+                                                    statusText.innerText = `Attendance logged successfully for ${matchedName}`;
+                                                }
+                                                loadSavedAttendance();
+                                            }
+                                        })
+                                        .finally(() => {
+                                            hasBlinkVerified.set(matchedName, false);
+                                            attendanceInProgress = false;
+                                        });
+                                }
+                            } else {
+                                boxColor = '#ffcc00';
+                                labelText = 'Face detected - Blink to Confirm';
+                                livenessStatus.innerText = '👁️ Please Blink to Confirm';
+                                livenessStatus.style.borderColor = '#ffcc00';
+                                livenessStatus.style.color = '#ffcc00';
+                            }
+                        } else {
+                            boxColor = '#ff4444';
+                            labelText = `Unknown (${(confidence * 100).toFixed(0)}%)`;
+                            livenessStatus.innerText = '❌ Unrecognized Face';
+                            livenessStatus.style.borderColor = '#ff4444';
+                            livenessStatus.style.color = '#ff4444';
+                        }
+                    }
+
+                    const drawBox = new faceapi.draw.DrawBox(mirroredBox, {
+                        label: labelText,
+                        boxColor: boxColor,
+                        lineWidth: 2
+                    });
+
+                    drawBox.draw(canvas);
+                });
+            }, 100);
+        });
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
