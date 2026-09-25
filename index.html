@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Derry Sagusay | BSIT Portfolio</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            line-height: 1.6;
+        }
+
+        /* NAVIGATION */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 18px 8%;
+            background: rgba(15, 23, 42, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #38bdf8;
+        }
+
+        /* GENERAL */
+        section {
+            min-height: 100vh;
+            padding: 100px 8%;
+        }
+
+        /* HOME */
+        #home {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .home-text {
+            max-width: 650px;
+        }
+
+        .home-text h1 {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        .home-text h1 span {
+            color: #38bdf8;
+        }
+
+        .home-text h2 {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+
+        .home-text p {
+            color: #cbd5e1;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #38bdf8;
+            color: #0f172a;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            background: #7dd3fc;
+        }
+
+        .profile {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    border: 4px solid #38bdf8;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
+    transition: 0.3s;
+}
+
+.profile:hover {
+    transform: scale(1.05);
+}
+
+.profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+        /* HEADINGS */
+        .section-title {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 50px;
+        }
+
+        .section-title span {
+            color: #38bdf8;
+        }
+
+        /* ABOUT */
+        .about-container {
+            max-width: 900px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .about-container p {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        /* SKILLS */
+        .skills-container {
+            max-width: 900px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .skill {
+            background: #1e293b;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .skill:hover {
+            transform: translateY(-8px);
+        }
+
+        .skill h3 {
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+
+        /* PROJECTS */
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .project {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .project:hover {
+            transform: translateY(-8px);
+        }
+
+        .project h3 {
+            color: #38bdf8;
+            margin-bottom: 12px;
+        }
+
+        .project p {
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .project a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+
+        /* EDUCATION */
+        .education {
+            max-width: 800px;
+            margin: auto;
+            background: #1e293b;
+            padding: 30px;
+            border-left: 4px solid #38bdf8;
+            border-radius: 8px;
+        }
+
+        .education h3 {
+            color: #38bdf8;
+        }
+
+        /* CONTACT */
+        .contact {
+            text-align: center;
+        }
+
+        .contact p {
+            margin: 10px;
+            color: #cbd5e1;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 25px;
+            background: #020617;
+            color: #94a3b8;
+        }
+
+        /* MOBILE */
+        @media (max-width: 800px) {
+
+            nav {
+                padding: 15px 5%;
+            }
+
+            nav ul {
+                gap: 10px;
+                font-size: 14px;
+            }
+
+            #home {
+                flex-direction: column;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .home-text h1 {
+                font-size: 40px;
+            }
+
+            .skills-container,
+            .projects-container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile {
+                width: 220px;
+                height: 220px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="logo">Derry<span>.</span></div>
+
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+
+    <!-- HOME -->
+    <section id="home">
+
+        <div class="home-text">
+
+            <h1>Hello, I'm <span>Derry</span></h1>
+
+            <h2>BSIT Student & Aspiring IT Professional</h2>
+
+            <p>
+                Welcome to my personal portfolio. I am a Bachelor of
+                Science in Information Technology student interested in
+                programming, networking, cybersecurity, and technology.
+            </p>
+
+            <a href="#projects" class="btn">
+                View My Projects
+            </a>
+
+        </div>
+
+        <div class="profile">
+            <img src="images/profile.jpg" alt="Derry Sagusay">
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT -->
+    <section id="about">
+
+        <h2 class="section-title">
+            About <span>Me</span>
+        </h2>
+
+        <div class="about-container">
+
+            <p>
+                I am a BSIT student who is developing my skills in
+                programming and information technology.
+            </p>
+
+            <p>
+                My interests include web development, networking,
+                cybersecurity, computer hardware, and software development.
+            </p>
+
+            <p>
+                My goal is to continuously improve my technical skills
+                and create useful technology-based projects.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- SKILLS -->
+    <section id="skills">
+
+        <h2 class="section-title">
+            My <span>Skills</span>
+        </h2>
+
+        <div class="skills-container">
+
+            <div class="skill">
+                <h3>HTML</h3>
+                <p>Creating structured web pages.</p>
+            </div>
+
+            <div class="skill">
+                <h3>CSS</h3>
+                <p>Designing responsive websites.</p>
+            </div>
+
+            <div class="skill">
+                <h3>JavaScript</h3>
+                <p>Adding functionality and interaction.</p>
+            </div>
+
+            <div class="skill">
+                <h3>Python</h3>
+                <p>Learning programming and automation.</p>
+            </div>
+
+            <div class="skill">
+                <h3>Networking</h3>
+                <p>Learning computer networks and infrastructure.</p>
+            </div>
+
+            <div class="skill">
+                <h3>Cybersecurity</h3>
+                <p>Learning security concepts and practices.</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROJECTS -->
+    <section id="projects">
+
+        <h2 class="section-title">
+            My <span>Projects</span>
+        </h2>
+
+        <div class="projects-container">
+
+    <!-- PROJECT 1 -->
+    <div class="project">
+
+        <h3>☕ Bean & Brew</h3>
+
+        <p>
+            A coffee shop website created using HTML, CSS,
+            and JavaScript.
+        </p>
+
+        <a href="projects/bean-brew/index.html">
+            Bean & Brew
+        </a>
+    </div>
+
+
+    <!-- PROJECT 2 -->
+    <div class="project">
+
+        <h3>📚 Attendance Monitoring System</h3>
+
+        <p>
+            A web-based system designed to manage and record
+            student attendance.
+        </p>
+
+        <a href="Project/sagusay.html">
+            Face Recognition
+        </a>
+
+    </div>
+
+</div>
+
+
+            <div class="project">
+
+                <h3>📚 Case Study</h3>
+
+                <p>
+                    My upcoming BSIT case study and system development
+                    project.
+                </p>
+
+                <a href="#">
+                    View Case Study →
+                </a>
+
+            </div>
+
+
+            <div class="project">
+
+                <h3>🔐 Cybersecurity Project</h3>
+
+                <p>
+                    A cybersecurity-related project demonstrating
+                    my knowledge and skills.
+                </p>
+
+                <a href="#">
+                    View Project →
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- EDUCATION -->
+    <section id="education">
+
+        <h2 class="section-title">
+            <span>Education</span>
+        </h2>
+
+        <div class="education">
+
+            <h3>Bachelor of Science in Information Technology</h3>
+
+            <p>
+                Father Saturnino Urios University
+            </p>
+
+            <p>
+                First Year BSIT
+            </p>
+
+            <br>
+
+            <h3>Senior High School – STEM</h3>
+
+            <p>
+                Northern Mindanao Colleges Inc.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTACT -->
+    <section id="contact">
+
+        <h2 class="section-title">
+            Contact <span>Me</span>
+        </h2>
+
+        <div class="contact">
+
+            <p>📧 Email: Derrysagusay2007@gmail.com</p>
+
+            <p>📱 Facebook: Derry Sagusay</p>
+
+            <p>💻 GitHub: DerrySagusay</p>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <p>
+            © 2026 Derry Sagusay. All Rights Reserved.
+        </p>
+
+    </footer>
+
+</body>
+</html>
